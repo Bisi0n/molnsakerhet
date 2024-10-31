@@ -1,3 +1,4 @@
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using molnsakerhet.Data;
 
@@ -12,9 +13,13 @@ namespace molnsakerhet
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+            //Lägg till Azure Keyvault i konfiguration
+            var keyVaultUri = new Uri("https://kyh-vault.vault.azure.net/");
+            builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+
             // Här konfigurerar vi vår databas med connectionsträng från appsettings.json
             builder.Services.AddDbContext<AppDbContext>(options => 
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(builder.Configuration["DefaultConnection"]));
 
 
             // >> Om ni kör SQL Server använd .UseSqlServer
